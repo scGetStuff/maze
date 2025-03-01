@@ -6,7 +6,6 @@ class Point:
     def __str__(self) -> str:
         return f"(x:{self.x}, y:{self.y})"
 
-    # TODO: can this be a dunder overide?
     def asTuple(self) -> tuple[int]:
         return (self.x, self.y)
 

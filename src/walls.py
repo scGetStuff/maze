@@ -1,5 +1,5 @@
+# clockwise, css order
 class Walls:
-    # clockwise, css order
     def __init__(
         self,
         top: bool = True,
@@ -13,11 +13,11 @@ class Walls:
         self.left = left
 
     def __str__(self) -> str:
-        return f"({self.top}, {self.right}, {self.bottom}, {self.left})"
+        return f"Walls({self.top}, {self.right}, {self.bottom}, {self.left})"
 
 
 def main():
-    walls = Walls(True, True, True, True)
+    walls = Walls()
 
     print()
     print(walls)

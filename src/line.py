@@ -9,7 +9,10 @@ class Line:
 
     def draw(self, canvas: Canvas, fillColor: str):
         canvas.create_line(
-            *self.a.asTuple(), *self.b.asTuple(), fill=fillColor, width=2
+            *self.a.asTuple(),
+            *self.b.asTuple(),
+            fill=fillColor,
+            width=2,
         )
 
     def __str__(self) -> str:
@@ -17,10 +20,17 @@ class Line:
 
 
 def main():
-    line = Line(Point(0, 0), Point(250, 250))
+    from window import Window
+
+    win = Window(500, 500)
+    win.root.title = "Line test"
+    line = Line(Point(100, 100), Point(300, 300))
+    line.draw(win.canvas, "blue")
 
     print()
     print(line)
+
+    win.wait()
 
 
 if __name__ == "__main__":
