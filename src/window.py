@@ -12,7 +12,10 @@ class Window:
         self.root.protocol("WM_DELETE_WINDOW", self.close)
 
         self.canvas = Canvas(
-            self.root, width=self.width, height=self.height, background="white"
+            self.root,
+            width=self.width,
+            height=self.height,
+            background="white",
         )
         self.canvas.pack()
 
@@ -32,3 +35,12 @@ class Window:
 
     def drawLine(self, line: Line, fillColor: str):
         line.draw(self.canvas, fillColor)
+
+
+def main():
+    win = Window(500, 500)
+    win.wait()
+
+
+if __name__ == "__main__":
+    main()

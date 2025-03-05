@@ -8,12 +8,12 @@ from typing import Self
 class Cell:
     def __init__(
         self,
-        window: Window,
+        win: Window,
         topLeft: Point,
         bottomRight: Point,
         walls: Walls = None,
     ):
-        self.window = window
+        self.win = win
 
         self.topLeft = topLeft
         self.topRight = Point(bottomRight.x, topLeft.y)
@@ -31,7 +31,7 @@ class Cell:
 
     def __str__(self) -> str:
         return (
-            f"window: {self.window.root.title}\n"
+            f"window: {self.win.root.title}\n"
             f"center: {self.center}\n"
             f"topLeft: {self.topLeft}\n"
             f"topRight: {self.topRight}\n"
@@ -45,18 +45,18 @@ class Cell:
 
     def draw(self, fillColor: str):
         if self.walls.top:
-            self.window.drawLine(Line(self.topLeft, self.topRight), fillColor)
+            self.win.drawLine(Line(self.topLeft, self.topRight), fillColor)
         if self.walls.right:
-            self.window.drawLine(Line(self.topRight, self.bottomRight), fillColor)
+            self.win.drawLine(Line(self.topRight, self.bottomRight), fillColor)
         if self.walls.bottom:
-            self.window.drawLine(Line(self.bottomLeft, self.bottomRight), fillColor)
+            self.win.drawLine(Line(self.bottomLeft, self.bottomRight), fillColor)
         if self.walls.left:
-            self.window.drawLine(Line(self.topLeft, self.bottomLeft), fillColor)
+            self.win.drawLine(Line(self.topLeft, self.bottomLeft), fillColor)
 
     def drawMove(self, destination: Self, undo=False):
         color = "gray" if undo else "red"
         line = Line(self.center, destination.center)
-        line.draw(self.window.canvas, color)
+        line.draw(self.win.canvas, color)
 
 
 def main():
