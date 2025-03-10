@@ -7,7 +7,7 @@ class Line:
         self.a = a
         self.b = b
 
-    def draw(self, canvas: Canvas, fillColor: str):
+    def draw(self, canvas: Canvas, fillColor: str = "black"):
         canvas.create_line(
             *self.a.asTuple(),
             *self.b.asTuple(),
@@ -26,6 +26,8 @@ def main():
     win.root.title = "Line test"
     line = Line(Point(100, 100), Point(300, 300))
     line.draw(win.canvas, "blue")
+    line = Line(Point(200, 100), Point(100, 300))
+    line.draw(win.canvas)
 
     print()
     print(line)

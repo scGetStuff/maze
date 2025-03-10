@@ -12,6 +12,7 @@ class Cell:
         topLeft: Point,
         bottomRight: Point,
         walls: Walls = None,
+        visited: bool = False,
     ):
         self.win = win
 
@@ -29,6 +30,8 @@ class Cell:
             walls = Walls()
         self.walls = walls
 
+        self.visited = visited
+
     def __str__(self) -> str:
         return (
             f"window: {self.win.root.title}\n"
@@ -38,12 +41,18 @@ class Cell:
             f"bottomRight: {self.bottomRight}\n"
             f"bottomLeft: {self.bottomLeft}\n"
             f"walls: {self.walls}\n"
+            f"visited: {self.visited}\n"
         )
 
     def __repr__(self):
         return f"Cell({self.topLeft}, {self.bottomRight})"
 
-    def draw(self, fillColor: str):
+    # Turns out I didn't read the spec carefuly, draw was supposed to take points as args
+    # this makes no sense, because cells never move, always drawn in the same place
+    # the points are set at construction, I'm not changing it
+    def draw(self, fillColor: str = "black"):
+        self._resetWalls()
+
         if self.walls.top:
             self.win.drawLine(Line(self.topLeft, self.topRight), fillColor)
         if self.walls.right:
@@ -52,6 +61,14 @@ class Cell:
             self.win.drawLine(Line(self.bottomLeft, self.bottomRight), fillColor)
         if self.walls.left:
             self.win.drawLine(Line(self.topLeft, self.bottomLeft), fillColor)
+
+    # lines do not dissapear when breaking walls, reset them
+    # I do hate this hack, it is what the lesson recomended
+    def _resetWalls(self):
+        self.win.drawLine(Line(self.topLeft, self.topRight), "white")
+        self.win.drawLine(Line(self.topRight, self.bottomRight), "white")
+        self.win.drawLine(Line(self.bottomLeft, self.bottomRight), "white")
+        self.win.drawLine(Line(self.topLeft, self.bottomLeft), "white")
 
     def drawMove(self, destination: Self, undo=False):
         color = "gray" if undo else "red"
@@ -65,8 +82,8 @@ def main():
     cell1 = Cell(win, Point(100, 100), Point(200, 200))
     cell2 = Cell(win, Point(300, 300), Point(400, 400))
 
-    cell1.draw("black")
-    cell2.draw("black")
+    cell1.draw()
+    cell2.draw("green")
     cell1.drawMove(cell2)
 
     print()

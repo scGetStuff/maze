@@ -10,6 +10,7 @@ class Window:
         self.root = Tk()
         self.root.title = "Maze"
         self.root.protocol("WM_DELETE_WINDOW", self.close)
+        # self.root.resizable(True, True)
 
         self.canvas = Canvas(
             self.root,
@@ -39,6 +40,7 @@ class Window:
 
 def main():
     win = Window(500, 500)
+    print(win)
     win.wait()
 
 

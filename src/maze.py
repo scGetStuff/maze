@@ -5,7 +5,7 @@ from cell import Cell
 import random
 import time
 
-# just while building to see cells clearly
+# just while building to see all the walls
 GAP = 5
 
 
@@ -24,20 +24,13 @@ class Maze:
         self.cols = cols
         self.cellWidth = cellWidth
         self.cellHeight = cellHeight
-
-        # TODO: I kind of hate the idea of changing code to make tests work
-        # the test code needs to run without a Window, so param is now optional
-        # I don't want to put a bunch of stupid null checks throughout all the classes
-        # so I'm making a dummy window
-        if not win:
-            win = Window(500, 500)
         self.win = win
 
         self.cells: list[list[Cell]] = []
 
     def __str__(self) -> str:
         return (
-            f"window: {self.win.root.title}\n"
+            f"window: {self.win.root.title if self.win else "None"}\n"
             f"origin: {self.origin}\n"
             f"rows: {self.rows}\n"
             f"cols: {self.cols}\n"
@@ -45,49 +38,60 @@ class Maze:
             f"cellHeight: {self.cellHeight}\n"
         )
 
-    # spec has this private and called by constructor
-    # I'm not doing that
-    # I want it separate so I can make changes to cells between creation and rendering
-    # or to recreate cells if dimentions change
-    # like randomWalls() & connectCells() poc work
+    # spec has this private and called by constructor, I'm not doing that
+    # I want it separate so I can recreate cells if dimentions change
     def createCells(self):
-        cells: list[list[Cell]] = []
+        self.cells: list[list[Cell]] = []
 
         for r in range(self.rows):
             y = self.origin.y + self.cellHeight * r
-            row: list[Cell] = []
+            self.cells.append([])
 
             for c in range(self.cols):
                 x = self.origin.x + self.cellWidth * c
                 start = Point(x + GAP, y + GAP)
                 end = Point(self.cellWidth + x, self.cellHeight + y)
-                cell = Cell(self.win, start, end)
-                row.append(cell)
+                self.cells[r].append(Cell(self.win, start, end))
 
-            cells.append(row)
+                self._drawCell(r, c)
 
-        self.cells = cells
+        self._openMaze()
 
-    # nothing in spec on color
-    def drawCells(self, fillColor="black"):
-        for row in self.cells:
-            for cell in row:
-                cell.draw(fillColor)
-
-    def drawCell(self, row: int, col: int, fillColor="black"):
-        if not self.cells:
+    def _drawCell(self, row: int, col: int, fillColor: str = "black"):
+        if not self.win:
             return
         self.cells[row][col].draw(fillColor)
-        self.animate()
+        self._animate()
 
-    def animate(self):
+    def _animate(self):
+        if not self.win:
+            return
         self.win.redraw()
-        time.sleep(0.5)
+        time.sleep(0.1)
+
+    def _openMaze(self):
+        self.cells[0][0].walls.left = False
+        self._drawCell(0, 0)
+
+        self.cells[self.rows - 1][self.cols - 1].walls.right = False
+        self._drawCell(self.rows - 1, self.cols - 1)
+
+    # TODO: L10 - follow algorithm in the lesson
+    def breakRandomWalls(self):
+        random.seed(0)
+
+        for r in range(len(self.cells)):
+            for c in range(len(self.cells[r])):
+                self.cells[r][c].walls.top = random.random() > 0.5
+                self.cells[r][c].walls.right = random.random() > 0.5
+                self.cells[r][c].walls.bottom = random.random() > 0.5
+                self.cells[r][c].walls.left = random.random() > 0.5
+
+                self._drawCell(r, c)
 
 
 def connectCells(cells: list[list[Cell]]):
     for row in cells:
-        # print(f"\n{row}")
         # look ahead 1 cell and match wall state
         for c in range(len(row) - 1):
             cell = row[c]
@@ -97,15 +101,6 @@ def connectCells(cells: list[list[Cell]]):
                 cell.drawMove(next)
 
 
-def randomWalls(cells: list[list[Cell]]):
-    for row in cells:
-        for cell in row:
-            cell.walls.top = random.random() > 0.5
-            cell.walls.right = random.random() > 0.5
-            cell.walls.bottom = random.random() > 0.5
-            cell.walls.left = random.random() > 0.5
-
-
 def main():
 
     win = Window(500, 500)
@@ -113,10 +108,9 @@ def main():
 
     maze = Maze(Point(100, 100), 5, 5, 60, 50, win)
     maze.createCells()
-    randomWalls(maze.cells)
-    connectCells(maze.cells)
-    maze.drawCells()
-    maze.drawCell(1, 1, "red")
+    maze.breakRandomWalls()
+
+    maze._drawCell(1, 1, "red")
 
     print()
     print(maze)

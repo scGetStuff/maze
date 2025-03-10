@@ -17,9 +17,9 @@ def main():
 
     # doLineStuff(maze)
 
-    maze = Maze(Point(0, 0), 8, 16, CELL_SIZE, CELL_SIZE, win)
+    maze = Maze(Point(0, 0), 4, 8, CELL_SIZE, CELL_SIZE, win)
     maze.createCells()
-    maze.drawCells()
+    maze.breakRandomWalls()
 
     win.wait()
 

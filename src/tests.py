@@ -20,7 +20,7 @@ mazeTests = [
     {
         "maze": Maze(Point(1, 2), rows=3, cols=4, cellWidth=5, cellHeight=6),
         "expected": (
-            "window: Maze\n"
+            "window: None\n"
             "origin: (x:1, y:2)\n"
             "rows: 3\n"
             "cols: 4\n"
