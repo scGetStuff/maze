@@ -6,7 +6,7 @@ from maze import Maze
 
 
 # TODO: make this scale to the grid
-WIN_SIZE = (1024, 768)
+WIN_SIZE = (800, 600)
 CELL_SIZE = 50
 
 
@@ -19,7 +19,7 @@ def main():
 
     maze = Maze(Point(0, 0), 4, 8, CELL_SIZE, CELL_SIZE, win)
     maze.createCells()
-    maze.breakRandomWalls()
+    maze.breakWalls()
 
     win.wait()
 

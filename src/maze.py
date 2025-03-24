@@ -67,7 +67,7 @@ class Maze:
         if not self.win:
             return
         self.win.redraw()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
     def _openMaze(self):
         self.cells[0][0].walls.left = False
@@ -76,8 +76,66 @@ class Maze:
         self.cells[self.rows - 1][self.cols - 1].walls.right = False
         self._drawCell(self.rows - 1, self.cols - 1)
 
-    # TODO: L10 - follow algorithm in the lesson
-    def breakRandomWalls(self):
+    def breakWalls(self):
+        # random.seed(0)
+
+        self._breakWalls(0, 0)
+        self._resetVisited()
+
+    def _breakWalls(self, r: int, c: int):
+        self.cells[r][c].visited = True
+
+        while True:
+            directions = self._getValidDirections(r, c)
+            print(f"DIRS: {directions}")
+            if len(directions) < 1:
+                self._drawCell(r, c)
+                return
+
+            index = random.randrange(len(directions))
+            # print(f"NUM: {index}")
+            s, x, y = directions[index]
+            self._breakWall(self.cells[r][c], directions[index])
+            self._breakWalls(x, y)
+
+    def _getValidDirections(self, r: int, c: int) -> list[tuple[str, int, int]]:
+        directions = []
+
+        if r - 1 >= 0 and not self.cells[r - 1][c].visited:
+            directions.append(("North", r - 1, c))
+        if r + 1 < self.rows and not self.cells[r + 1][c].visited:
+            directions.append(("South", r + 1, c))
+        if c - 1 >= 0 and not self.cells[r][c - 1].visited:
+            directions.append(("West", r, c - 1))
+        if c + 1 < self.cols and not self.cells[r][c + 1].visited:
+            directions.append(("East", r, c + 1))
+
+        return directions
+
+    def _breakWall(self, cell: Cell, direction: tuple[str, int, int]):
+        s, r, c = direction
+
+        match s:
+            case "North":
+                cell.walls.top = False
+                self.cells[r][c].walls.bottom = False
+            case "South":
+                cell.walls.bottom = False
+                self.cells[r][c].walls.top = False
+            case "West":
+                cell.walls.left = False
+                self.cells[r][c].walls.right = False
+            case "East":
+                cell.walls.right = False
+                self.cells[r][c].walls.left = False
+
+    def _resetVisited(self):
+        for r in range(len(self.cells)):
+            for c in range(len(self.cells[r])):
+                self.cells[r][c].visited = False
+
+    # test code
+    def _breakRandomWalls(self):
         random.seed(0)
 
         for r in range(len(self.cells)):
@@ -108,7 +166,8 @@ def main():
 
     maze = Maze(Point(100, 100), 5, 5, 60, 50, win)
     maze.createCells()
-    maze.breakRandomWalls()
+    # maze._breakRandomWalls()
+    maze.breakWalls()
 
     maze._drawCell(1, 1, "red")
 
