@@ -87,7 +87,7 @@ class Maze:
 
         while True:
             directions = self._getValidDirections(r, c)
-            print(f"DIRS: {directions}")
+            # print(f"DIRS: {directions}")
             if len(directions) < 1:
                 self._drawCell(r, c)
                 return
