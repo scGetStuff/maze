@@ -6,6 +6,7 @@ from maze import Maze
 
 
 # TODO: make this scale to the grid
+# I want to add resize, input grid size and regrow the screen
 WIN_SIZE = (800, 600)
 CELL_SIZE = 50
 
@@ -17,9 +18,10 @@ def main():
 
     # doLineStuff(maze)
 
-    maze = Maze(Point(0, 0), 4, 8, CELL_SIZE, CELL_SIZE, win)
+    maze = Maze(Point(10, 10), 9, 12, CELL_SIZE, CELL_SIZE, win)
     maze.createCells()
     maze.breakWalls()
+    maze.solve()
 
     win.wait()
 

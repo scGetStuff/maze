@@ -6,7 +6,7 @@ import random
 import time
 
 # just while building to see all the walls
-GAP = 5
+GAP = 0
 
 
 class Maze:
@@ -37,6 +37,67 @@ class Maze:
             f"cellWidth: {self.cellWidth}\n"
             f"cellHeight: {self.cellHeight}\n"
         )
+
+    def solve(self):
+        if self._solve(0, 0):
+            self._fixLines()
+        self._resetVisited()
+
+    # hack to extend the line for start/end cells
+    # the spec draws moves from the center of cell
+    # oterwise cells would need to know direction
+    def _fixLines(self):
+        color = "red"
+        start = self.cells[0][0]
+        end = self.cells[self.rows - 1][self.cols - 1]
+
+        line = Line(Point(start.topLeft.x, start.center.y), start.center)
+        line.draw(self.win.canvas, color)
+
+        line = Line(Point(end.bottomRight.x, end.center.y), end.center)
+        line.draw(self.win.canvas, color)
+
+    def _solve(self, r: int, c: int) -> bool:
+
+        self._animate()
+        self.cells[r][c].visited = True
+
+        if r == self.rows - 1 and c == self.cols - 1:
+            return True
+
+        directions = self._getValidDirections(r, c)
+        for direction in directions:
+            s, dr, dc = direction
+            if self._validateMove(self.cells[r][c], direction):
+                self.cells[r][c].drawMove(self.cells[dr][dc])
+                if self._solve(dr, dc):
+                    return True
+                self.cells[r][c].drawMove(self.cells[dr][dc], True)
+
+        return False
+
+    def _validateMove(self, cell: Cell, direction: tuple[str, int, int]) -> bool:
+        s, r, c = direction
+
+        match s:
+            case "North":
+                return (
+                    cell.walls.top == False and self.cells[r][c].walls.bottom == False
+                )
+            case "South":
+                return (
+                    cell.walls.bottom == False and self.cells[r][c].walls.top == False
+                )
+            case "West":
+                return (
+                    cell.walls.left == False and self.cells[r][c].walls.right == False
+                )
+            case "East":
+                return (
+                    cell.walls.right == False and self.cells[r][c].walls.left == False
+                )
+
+        return False
 
     # spec has this private and called by constructor, I'm not doing that
     # I want it separate so I can recreate cells if dimentions change
@@ -87,16 +148,14 @@ class Maze:
 
         while True:
             directions = self._getValidDirections(r, c)
-            # print(f"DIRS: {directions}")
             if len(directions) < 1:
                 self._drawCell(r, c)
                 return
 
             index = random.randrange(len(directions))
-            # print(f"NUM: {index}")
-            s, x, y = directions[index]
+            s, dr, dc = directions[index]
             self._breakWall(self.cells[r][c], directions[index])
-            self._breakWalls(x, y)
+            self._breakWalls(dr, dc)
 
     def _getValidDirections(self, r: int, c: int) -> list[tuple[str, int, int]]:
         directions = []
@@ -134,30 +193,6 @@ class Maze:
             for c in range(len(self.cells[r])):
                 self.cells[r][c].visited = False
 
-    # test code
-    def _breakRandomWalls(self):
-        random.seed(0)
-
-        for r in range(len(self.cells)):
-            for c in range(len(self.cells[r])):
-                self.cells[r][c].walls.top = random.random() > 0.5
-                self.cells[r][c].walls.right = random.random() > 0.5
-                self.cells[r][c].walls.bottom = random.random() > 0.5
-                self.cells[r][c].walls.left = random.random() > 0.5
-
-                self._drawCell(r, c)
-
-
-def connectCells(cells: list[list[Cell]]):
-    for row in cells:
-        # look ahead 1 cell and match wall state
-        for c in range(len(row) - 1):
-            cell = row[c]
-            next = row[c + 1]
-            cell.walls.right = next.walls.left
-            if not cell.walls.right:
-                cell.drawMove(next)
-
 
 def main():
 
@@ -166,10 +201,8 @@ def main():
 
     maze = Maze(Point(100, 100), 5, 5, 60, 50, win)
     maze.createCells()
-    # maze._breakRandomWalls()
     maze.breakWalls()
-
-    maze._drawCell(1, 1, "red")
+    maze.solve()
 
     print()
     print(maze)
